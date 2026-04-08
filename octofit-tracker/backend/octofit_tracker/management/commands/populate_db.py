@@ -5,12 +5,11 @@ class Command(BaseCommand):
     help = 'Populate the octofit_db database with test data'
 
     def handle(self, *args, **kwargs):
-        # Clear existing data
-        Activity.objects.all().delete()
-        Leaderboard.objects.all().delete()
-        User.objects.all().delete()
-        Team.objects.all().delete()
-        Workout.objects.all().delete()
+        # Clear existing data (delete individually for Djongo compatibility)
+        for model in [Activity, Leaderboard, User, Team, Workout]:
+            for obj in model.objects.all():
+                if getattr(obj, 'id', None) is not None:
+                    obj.delete()
 
         # Teams
         marvel = Team.objects.create(name='Marvel', description='Marvel superheroes')
